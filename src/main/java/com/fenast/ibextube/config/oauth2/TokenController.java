@@ -1,5 +1,6 @@
 package com.fenast.ibextube.config.oauth2;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -19,8 +20,11 @@ import java.util.List;
 @Controller
 public class TokenController {
 
-    @Resource(name = "tokenServices")
-    ConsumerTokenServices tokenServices;
+/*    @Resource(name = "tokenServices")
+    ConsumerTokenServices tokenServices;*/
+
+    @Autowired
+    private ConsumerTokenServices tokenServices;
 
     @Resource(name = "tokenStore")
     TokenStore tokenStore;
@@ -36,7 +40,7 @@ public class TokenController {
     public List<String> getTokens() {
         List<String> tokenValues = new ArrayList<String>();
         Collection<OAuth2AccessToken> tokens = tokenStore.findTokensByClientId("sampleClientId");
-        if(tokens != null) {
+        if (tokens != null) {
             for (OAuth2AccessToken token : tokens) {
                 tokenValues.add(token.getValue());
             }
@@ -47,7 +51,7 @@ public class TokenController {
     @RequestMapping(method = RequestMethod.POST, value = "/tokens/revokeRefreshToken/{tokenId:.*}")
     @ResponseBody
     public String revokeRefreshToken(@PathVariable String tokenId) {
-        if(tokenStore instanceof JdbcTokenStore) {
+        if (tokenStore instanceof JdbcTokenStore) {
             ((JdbcTokenStore) tokenStore).removeRefreshToken(tokenId);
         }
         return tokenId;
