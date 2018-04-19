@@ -3,11 +3,8 @@ package com.fenast.ibextube.config.oauth2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
@@ -21,9 +18,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.*;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -31,6 +25,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableAuthorizationServer
+@ComponentScan({"com.fenast.ibextube"})
 public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
     @Value("classpath:schemaScript.sql")
     private Resource schemaScript;
@@ -43,12 +38,40 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 
     @Autowired
     @Qualifier("authenticationManagerBean")
+    //@Lazy
+    // Need to separate the UserDetail and Oauth2 Config
     private AuthenticationManager authenticationManager;
 
     @Override
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
         oauthServer.tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()");
+    }
+    // JDBC Token Store Configuration
+
+    @Bean
+    public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
+        final DataSourceInitializer initializer = new DataSourceInitializer();
+        initializer.setDataSource(dataSource);
+        initializer.setDatabasePopulator(databasePopulator());
+        return initializer;
+    }
+
+    private DatabasePopulator databasePopulator() {
+        final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(schemaScript);
+        populator.addScript(dataScript);
+        return populator;
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
+        dataSource.setUrl(env.getProperty("jdbc.url"));
+        dataSource.setUsername(env.getProperty("jdbc.user"));
+        dataSource.setPassword(env.getProperty("jdbc.pass"));
+        return dataSource;
     }
 
     @Override
@@ -96,82 +119,10 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         return new CustomTokenEnhancer();
     }
 
-    // JDBC Token Store Configuration
 
     @Bean
-    public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
-        final DataSourceInitializer initializer = new DataSourceInitializer();
-        initializer.setDataSource(dataSource);
-        initializer.setDatabasePopulator(databasePopulator());
-        return initializer;
-    }
-
-    private DatabasePopulator databasePopulator() {
-        final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(schemaScript);
-        populator.addScript(dataScript);
-        return populator;
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
-        dataSource.setUrl(env.getProperty("jdbc.url"));
-        dataSource.setUsername(env.getProperty("jdbc.user"));
-        dataSource.setPassword(env.getProperty("jdbc.pass"));
-        return dataSource;
-    }
-
-/*    @Bean
-    public TokenStore tokenStore() {
-        return new JdbcTokenStore(dataSource());
-    }*/
-
-/*    @Bean
-    public TokenStore tokenStore() {
-        return new JwtTokenStore(accessTokenConverter());
-    }*/
-
-    @Bean
-    public JwtAccessTokenConverter accessTokenConverter() {
-        final JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("123");
-        final KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(new ClassPathResource("ibextube.jks"),"secret".toCharArray());
-        converter.setKeyPair(keyStoreKeyFactory.getKeyPair("ibextube"));
-        return converter;
-    }
-     @Bean
     public TokenStore tokenStore() {
         return new JdbcTokenStore(dataSource());
     }
-  /*
-    @Bean
-    public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
-        DataSourceInitializer initializer = new DataSourceInitializer();
-        initializer.setDataSource(dataSource);
-        initializer.setDatabasePopulator(databasePopulator());
-        return initializer;
-    }
 
-    private DatabasePopulator databasePopulator() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(schemaScript);
-        return populator;
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
-        dataSource.setUrl(env.getProperty("jdbc.url"));
-        dataSource.setUsername(env.getProperty("jdbc.user"));
-        dataSource.setPassword(env.getProperty("jdbc.pass"));
-        return dataSource;
-    }
-
-    @Bean(name = "authenticationManagerBean")
-    public AuthenticationManager getAuthManager() {
-        return new OAuth2AuthenticationManager();
-    }*/
 }

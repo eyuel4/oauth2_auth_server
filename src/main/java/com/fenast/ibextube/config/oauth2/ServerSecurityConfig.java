@@ -1,24 +1,39 @@
 package com.fenast.ibextube.config.oauth2;
 
+import com.fenast.ibextube.config.security.IbexUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 @Configuration
 /*@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)*/
 public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Autowired
+    private ClientDetailsService clientDetailsService;
+
+    @Autowired
+    private IbexUserDetailsService ibexUserDetailsService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("john").password("123").roles("USER");
+/*        auth.inMemoryAuthentication()
+                .withUser("john").password("123").roles("USER");*/
        // auth.jdbcAuthentication().passwordEncoder(NoOpPasswordEncoder.getInstance());
+        auth.userDetailsService(ibexUserDetailsService).passwordEncoder(passwordEncoder());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Override
@@ -35,13 +50,8 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/tokens/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().permitAll()
-                .and().csrf().disable();
+                .formLogin().permitAll();
     }
 
-    @SuppressWarnings("deprecation")
-    @Bean
-    public static NoOpPasswordEncoder passwordEncoder() {
-        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
-    }
+
 }
