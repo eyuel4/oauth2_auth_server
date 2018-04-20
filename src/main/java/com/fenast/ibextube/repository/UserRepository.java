@@ -1,4 +1,3 @@
-/*
 package com.fenast.ibextube.repository;
 
 import com.fenast.ibextube.model.User;
@@ -9,9 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
 
-    @Query("SELECT  DISTINCT user FROM User u "+
+    @Query("SELECT  DISTINCT user FROM User user "+
             "INNER JOIN FETCH user.authorities AS authorities " +
             "WHERE user.username = :username")
     User findByUsername(String username);
 }
-*/

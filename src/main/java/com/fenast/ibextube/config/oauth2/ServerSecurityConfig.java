@@ -9,16 +9,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 @Configuration
 /*@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)*/
-@EnableGlobalAuthentication
 public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
 
-/*    @Autowired
+ /*   @Autowired
     @Qualifier(value = "UserDetailsServiceImpl")
     private UserDetailsService userDetailsService;*/
 
@@ -55,7 +56,8 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/tokens/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().permitAll();
+                .formLogin().disable()
+                .csrf().disable();
     }
 
 

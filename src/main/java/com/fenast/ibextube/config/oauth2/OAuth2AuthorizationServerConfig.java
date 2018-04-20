@@ -45,7 +45,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 
     @Autowired
     @Qualifier("authenticationManagerBean")
-/*    @Lazy*/
+    //@Lazy
     // Need to separate the UserDetail and Oauth2 Config
     private AuthenticationManager authenticationManager;
 
@@ -65,16 +65,11 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         return new JdbcTokenStore(dataSource());
     }
 
-    @Bean
-    public OAuth2AccessDeniedHandler oAuth2AccessDeniedHandler() {
-        return new OAuth2AccessDeniedHandler();
-    }
-
     @Override
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
         oauthServer.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
-                .passwordEncoder(oauthClientPasswordEncoder);
+                .checkTokenAccess("isAuthenticated()");
+                //.passwordEncoder(oauthClientPasswordEncoder);
     }
 
     @Override
