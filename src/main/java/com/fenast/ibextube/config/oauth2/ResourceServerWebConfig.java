@@ -1,3 +1,4 @@
+/*
 package com.fenast.ibextube.config.oauth2;
 
 import org.springframework.context.annotation.ComponentScan;
@@ -9,3 +10,4 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class ResourceServerWebConfig implements WebMvcConfigurer {
 }
+*/

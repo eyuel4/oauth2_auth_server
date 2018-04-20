@@ -1,7 +1,9 @@
+/*
 package com.fenast.ibextube.config.security;
 
 import com.fenast.ibextube.model.User;
 import com.fenast.ibextube.model.UserRole;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -70,3 +72,4 @@ public class IbexUserDetails implements UserDetails {
         return true;
     }
 }
+*/

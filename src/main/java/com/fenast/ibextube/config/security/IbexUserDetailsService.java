@@ -1,3 +1,4 @@
+/*
 package com.fenast.ibextube.config.security;
 
 import com.fenast.ibextube.model.User;
@@ -26,3 +27,4 @@ public class IbexUserDetailsService implements UserDetailsService {
         return new IbexUserDetails(user);
     }
 }
+*/

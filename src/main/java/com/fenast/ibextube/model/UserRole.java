@@ -1,3 +1,4 @@
+/*
 package com.fenast.ibextube.model;
 
 
@@ -27,3 +28,4 @@ public class UserRole {
         this.name = name;
     }
 }
+*/
