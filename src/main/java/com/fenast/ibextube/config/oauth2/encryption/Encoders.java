@@ -5,12 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * Created by taddesee on 4/19/2018.
- */
 @Configuration
 public class Encoders {
-
     @Bean
     public PasswordEncoder oauthClientPasswordEncoder() {
         return new BCryptPasswordEncoder(4);
