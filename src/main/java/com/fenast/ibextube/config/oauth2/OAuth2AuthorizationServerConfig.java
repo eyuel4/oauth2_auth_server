@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -50,6 +51,9 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     private AuthenticationManager authenticationManager;
 
 /*    @Autowired
+    private UserDetailsService userDetailsService;*/
+
+/*    @Autowired
     @Qualifier(value = "UserDetailsServiceImpl")
     private UserDetailsService userDetailsService;*/
 
@@ -60,6 +64,10 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     @Qualifier(value = "oauthClientPasswordEncoder")
     private PasswordEncoder oauthClientPasswordEncoder;
 
+    @Autowired
+    @SuppressWarnings("deprecation")
+    private NoOpPasswordEncoder noOpPasswordEncoder;
+
     @Bean
     public TokenStore tokenStore() {
         return new JdbcTokenStore(dataSource());
@@ -68,8 +76,8 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     @Override
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
         oauthServer.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()");
-                //.passwordEncoder(oauthClientPasswordEncoder);
+                .checkTokenAccess("isAuthenticated()")
+                .passwordEncoder(oauthClientPasswordEncoder);
     }
 
     @Override

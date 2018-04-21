@@ -12,14 +12,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Configuration
 /*@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)*/
 public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
-
- /*   @Autowired
+/*
+    @Autowired
     @Qualifier(value = "UserDetailsServiceImpl")
     private UserDetailsService userDetailsService;*/
 
@@ -27,21 +29,34 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
     @Qualifier(value = "userPasswordEncoder")
     private PasswordEncoder userPasswordEncoder;
 
+    @Autowired
+    @Qualifier(value = "oauthClientPasswordEncoder")
+    private PasswordEncoder oauthClientPasswordEncoder;
+
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
+/*    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
+    }*/
+
     @Autowired
     public void globalUserDetails(final AuthenticationManagerBuilder auth) throws Exception {
         // @formatter:off
+
+        //auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
         auth.inMemoryAuthentication()
-                .withUser("john").password("123").roles("USER").and()
-                .withUser("tom").password("111").roles("ADMIN").and()
-                .withUser("user1").password("pass").roles("USER").and()
-                .withUser("admin").password("nimda").roles("ADMIN");
+                .passwordEncoder(oauthClientPasswordEncoder)
+                .withUser("john").password(oauthClientPasswordEncoder.encode("123")).roles("USER");
     }
+      /*          .withUser("tom").password("111").roles("ADMIN").and()
+                .withUser("user1").password("pass").roles("USER").and()
+                .withUser("admin").password("nimda").roles("ADMIN"); */
+    //}
 
 /*    @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -60,6 +75,16 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
     }
 
+/*    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(4);
+    }*/
+
+    @SuppressWarnings("deprecation")
+    @Bean
+    public static NoOpPasswordEncoder passwordEncoder() {
+        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+    }
 
 /*
     @Autowired
