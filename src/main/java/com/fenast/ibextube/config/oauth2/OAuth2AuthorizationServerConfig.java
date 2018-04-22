@@ -53,9 +53,10 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 /*    @Autowired
     private UserDetailsService userDetailsService;*/
 
-/*    @Autowired
+    @Autowired
     @Qualifier(value = "UserDetailsServiceImpl")
-    private UserDetailsService userDetailsService;*/
+    @Lazy
+    private UserDetailsService userDetailsService;
 
 /*    @Autowired
     private UserDetailsServiceImpl userDetailsService;*/
@@ -90,7 +91,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer()));
         endpoints.tokenStore(tokenStore()).tokenEnhancer(tokenEnhancerChain)
-                .authenticationManager(authenticationManager);//.userDetailsService(userDetailsService);
+                .authenticationManager(authenticationManager).userDetailsService(userDetailsService);
     }
 
     @Bean

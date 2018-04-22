@@ -1,10 +1,12 @@
 package com.fenast.ibextube.config.oauth2;
 
 /*import com.fenast.ibextube.config.security.IbexUserDetailsService;*/
+import com.fenast.ibextube.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
@@ -20,10 +22,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 /*@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)*/
 public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
-/*
+
     @Autowired
+    @Lazy
     @Qualifier(value = "UserDetailsServiceImpl")
-    private UserDetailsService userDetailsService;*/
+    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     @Qualifier(value = "userPasswordEncoder")
@@ -48,10 +51,10 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
     public void globalUserDetails(final AuthenticationManagerBuilder auth) throws Exception {
         // @formatter:off
 
-        //auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
+/*         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());*/
         auth.inMemoryAuthentication()
-                .passwordEncoder(oauthClientPasswordEncoder)
-                .withUser("john").password(oauthClientPasswordEncoder.encode("123")).roles("USER");
+                .passwordEncoder(userPasswordEncoder)
+                .withUser("john").password(userPasswordEncoder.encode("123")).roles("USER");
     }
       /*          .withUser("tom").password("111").roles("ADMIN").and()
                 .withUser("user1").password("pass").roles("USER").and()

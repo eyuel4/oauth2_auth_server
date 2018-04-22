@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Qualifier(value = "UserDetailsServiceImpl")
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl  implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
