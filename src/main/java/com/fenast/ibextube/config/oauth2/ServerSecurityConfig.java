@@ -51,10 +51,10 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
     public void globalUserDetails(final AuthenticationManagerBuilder auth) throws Exception {
         // @formatter:off
 
-/*         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());*/
-        auth.inMemoryAuthentication()
+         auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
+/*        auth.inMemoryAuthentication()
                 .passwordEncoder(userPasswordEncoder)
-                .withUser("john").password(userPasswordEncoder.encode("123")).roles("USER");
+                .withUser("john").password(userPasswordEncoder.encode( "123")).roles("USER");*/
     }
       /*          .withUser("tom").password("111").roles("ADMIN").and()
                 .withUser("user1").password("pass").roles("USER").and()

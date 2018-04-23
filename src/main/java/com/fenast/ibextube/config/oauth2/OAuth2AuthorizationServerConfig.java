@@ -78,7 +78,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
         oauthServer.tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()")
-                .passwordEncoder(oauthClientPasswordEncoder);
+                .passwordEncoder(noOpPasswordEncoder);
     }
 
     @Override
