@@ -20,12 +20,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Qualifier(value = "UserDetailsServiceImpl")
 public class UserDetailsServiceImpl  implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+//     @Autowired
+//     private UserRepository userRepository;
+    
+    private final UserRepository userRepository;
 
     @Autowired
     @Qualifier(value = "userPasswordEncoder")
     private PasswordEncoder userPasswordEncoder;
+    
+    public UserDetailsServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     @Transactional(readOnly = true)
