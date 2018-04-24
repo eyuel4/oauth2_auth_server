@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -36,26 +38,33 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
     @Qualifier(value = "oauthClientPasswordEncoder")
     private PasswordEncoder oauthClientPasswordEncoder;
 
+    //@Autowired
+    @SuppressWarnings("unused")
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private AuthenticationManagerBuilder authenticationManagerBuilder;
+
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
-/*    @Override
+    @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
-    }*/
+    }
 
-    @Autowired
-    public void globalUserDetails(final AuthenticationManagerBuilder auth) throws Exception {
+/*   @Autowired
+    public void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
         // @formatter:off
 
          auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
-/*        auth.inMemoryAuthentication()
+        auth.inMemoryAuthentication()
                 .passwordEncoder(userPasswordEncoder)
-                .withUser("john").password(userPasswordEncoder.encode( "123")).roles("USER");*/
-    }
+                .withUser("john").password(userPasswordEncoder.encode( "123")).roles("USER");
+    }*/
       /*          .withUser("tom").password("111").roles("ADMIN").and()
                 .withUser("user1").password("pass").roles("USER").and()
                 .withUser("admin").password("nimda").roles("ADMIN"); */
@@ -68,6 +77,12 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
+/*        this.authenticationManager = new AuthenticationManager() {
+            @Override
+            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                return authenticationManagerBuilder.getOrBuild().authenticate(authentication);
+            }
+        };*/
         http.authorizeRequests()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/oauth/token/revokeById/**").permitAll()
