@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,8 +35,11 @@ import java.util.Arrays;
 
 @Configuration
 @EnableAuthorizationServer
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ComponentScan({"com.fenast.ibextube"})
-public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter
+{
+
     @Value("classpath:schemaScript.sql")
     private Resource schemaScript;
 
@@ -47,17 +51,19 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 
     @Autowired
     @Qualifier("authenticationManagerBean")
-    //@Lazy
+    @Lazy
     // Need to separate the UserDetail and Oauth2 Config
     private AuthenticationManager authenticationManager;
 
 /*    @Autowired
     private UserDetailsService userDetailsService;*/
 
+/*
     @Autowired
     @Qualifier(value = "UserDetailsServiceImpl")
     @Lazy
     private UserDetailsService userDetailsService;
+*/
 
 /*    @Autowired
     private UserDetailsServiceImpl userDetailsService;*/
@@ -78,8 +84,8 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     @Override
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
         oauthServer.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuth enticated()")
-                .passwordEncoder(noOpPasswordEncoder);
+                .checkTokenAccess("isAuthenticated()")
+                .passwordEncoder(oauthClientPasswordEncoder);
     }
 
     @Override
@@ -92,7 +98,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer()));
         endpoints.tokenStore(tokenStore()).tokenEnhancer(tokenEnhancerChain)
-                .authenticationManager(authenticationManager).userDetailsService(userDetailsService).allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT);
+                .authenticationManager(authenticationManager);//.userDetailsService(userDetailsService);
     }
 
     @Bean
